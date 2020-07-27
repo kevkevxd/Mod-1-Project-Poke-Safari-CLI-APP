@@ -7,3 +7,5 @@ gem "pry"
 gem "require_all"
 gem 'poke-api-v2'
 gem 'rake'
+gem 'rest-client'
+gem 'json'
