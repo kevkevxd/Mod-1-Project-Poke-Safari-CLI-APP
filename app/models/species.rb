@@ -1,3 +1,3 @@
 class Species < ActiveRecord::Base
-    has_many :pokemon
+    has_many :pokemons
 end
