@@ -1,3 +1,3 @@
 class Type < ActiveRecord::Base
-    belongs_to :species
+    has_many :species
 end

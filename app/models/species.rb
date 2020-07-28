@@ -1,4 +1,4 @@
 class Species < ActiveRecord::Base
     has_many :pokemons
-    has_many :types
+    belongs_to :type
 end
