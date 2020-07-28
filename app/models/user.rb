@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
     end
 
     def pc_loadup
-         pokemon = self.pokemons 
+         pokemon = self.pokemons.reload  
          pokemon.each do |pokemon|
             puts "|--------------------------------------------------------------------------|"
             puts " NICKNAME: #{pokemon.nickname.upcase}"
@@ -145,6 +145,16 @@ class User < ActiveRecord::Base
         puts "  ################ "
         puts "    ############   "
         puts "                  "
+    end
+
+    def poke_ball_two
+        puts "    ##########   "
+        puts "  ##############  "
+        puts " ################ "
+        puts "######[ 0 ]#######"
+        puts " ##################"
+        puts "   ############### "
+        puts "     ############"
     end
 
 end
