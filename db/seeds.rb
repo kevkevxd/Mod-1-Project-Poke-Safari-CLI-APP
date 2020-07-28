@@ -33,6 +33,12 @@ all_pokemon["results"].each do |pokemon|
 
 end
 
+#Making an easter egg for Groudon because Groudon is the mascot of Ruby
+
+groudon_type = Type.create(type_one: "Ground", type_two: "Fire")
+
+Species.create(name: "groudon", type_id: groudon_type.id)
+
 
 pry.Start
 
