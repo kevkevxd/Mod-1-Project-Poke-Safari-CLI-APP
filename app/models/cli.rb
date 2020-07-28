@@ -1,6 +1,6 @@
 class Cli
     def self.start
-        puts "Welcome to PokeCLI! Would you like to sign up or sign in?"
+        puts "Welcome to Poké Safari! Would you like to sign up or sign in?"
         user_login_input = gets.chomp.strip 
         
         if user_login_input == "sign up"

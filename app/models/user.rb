@@ -55,9 +55,9 @@ class User < ActiveRecord::Base
             puts "|--------------------------------------------------------------------------|"
             puts " OWNER: #{self.trainer_name.upcase}"
             puts "////////////////////////////////////////////////////////////////////////////"
-            #Put an ASCII pokeball at the bottom.
          end
         if self.pokemons.count > 0
+            self.poke_ball 
             puts 'Would you like to release a pokemon or go back to the menu? Enter release or exit:'
             user_response = gets.chomp.downcase.strip 
             if user_response == 'release'
@@ -66,6 +66,7 @@ class User < ActiveRecord::Base
                 if self.pokemons.find_by(nickname: user_nickname)
                     self.pokemons.find_by(nickname: user_nickname).destroy
                     self.welcome
+                    
                 else
                     "Please enter a valid nickname. Try again:"
                     self.pc_loadup
@@ -131,5 +132,19 @@ class User < ActiveRecord::Base
         end
     end
 
+    # def pokeball_art
+    # end 
+
+    def poke_ball 
+        puts "                    "
+        puts "    ############   "
+        puts "  ################ "
+        puts " ################## "
+        puts "########[ 0 ]#######"
+        puts " ################## "
+        puts "  ################ "
+        puts "    ############   "
+        puts "                  "
+    end
 
 end
