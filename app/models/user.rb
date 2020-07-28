@@ -44,9 +44,16 @@ class User < ActiveRecord::Base
     def pc_loadup
          pokemon = self.pokemons 
          pokemon.each do |pokemon|
-            puts pokemon.nickname 
-            puts pokemon.species.name
-            puts "Type(s): #{pokemon.species.type.type_one} #{pokemon.species.type.type_two}"
+            puts "|--------------------------------------------------------------------------|"
+            puts " Nickname: #{pokemon.nickname}"
+            puts "|--------------------------------------------------------------------------|"
+            puts " Species: #{pokemon.species.name}"
+            puts "|--------------------------------------------------------------------------|"
+            puts " Type(s): #{pokemon.species.type.type_one} #{pokemon.species.type.type_two}"
+            puts "|--------------------------------------------------------------------------|"
+            puts " Owner: #{self.trainer_name}"
+            puts "                                                                            "
+            puts "////////////////////////////////////////////////////////////////////////////"
          end
         puts 'Would you like to release a pokemon or go back to the menu? Enter release or exit:'
         user_response = gets.chomp.downcase 
