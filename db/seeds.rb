@@ -5,6 +5,7 @@ require 'pry'
 Pokemon.delete_all
 Species.delete_all
 User.delete_all
+Type.delete_all
 
 # species_response = RestClient.get("https://pokeapi.co/api/v2/pokemon-species/?limit=151&offset=0")
 # all_pokemon_species = JSON.parse(species_response)
@@ -27,7 +28,7 @@ all_pokemon["results"].each do |pokemon|
        types["type"]["name"]  
     end
     
-   the_type = Type.create(type_one: type_names[0], type_two: type_names[1])
+   the_type = Type.find_or_create_by(type_one: type_names[0], type_two: type_names[1])
    Species.create(name: pokemon["name"], type_id: the_type.id)
 
 end
