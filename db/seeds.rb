@@ -4,21 +4,37 @@ require 'pry'
 
 Pokemon.delete_all
 Species.delete_all
+User.delete_all
 
+# species_response = RestClient.get("https://pokeapi.co/api/v2/pokemon-species/?limit=151&offset=0")
+# all_pokemon_species = JSON.parse(species_response)
 
-species_response = RestClient.get("https://pokeapi.co/api/v2/pokemon-species/?limit=151&offset=0")
-all_pokemon_species = JSON.parse(species_response)
+# all_pokemon_species["results"].each do |pokemon|
+#     Species.create(name: pokemon["name"])
+# end
+#add_column :types, :type, array: true, default: []
+pokemon_response = RestClient.get("https://pokeapi.co/api/v2/pokemon/?limit=151&offset=0")
+all_pokemon = JSON.parse(pokemon_response)
 
-all_pokemon_species["results"].each do |pokemon|
-    Species.create(name: pokemon["name"])
+all_pokemon["results"].each do |pokemon|
+    
+    stats_response = RestClient.get(pokemon["url"])
+    pokemon_stats = JSON.parse(stats_response)
+
+    pokemon_types = pokemon_stats["types"]
+
+    type_names = pokemon_types.map do |types| 
+       types["type"]["name"]  
+    end
+    
+   the_type = Type.create(type_one: type_names[0], type_two: type_names[1])
+   Species.create(name: pokemon["name"], type_id: the_type.id)
+
 end
 
 
+pry.Start
 
 
 
-
-
-
-binding.pry
 
