@@ -54,6 +54,7 @@ class User < ActiveRecord::Base
             puts " Owner: #{self.trainer_name}"
             puts "                                                                            "
             puts "////////////////////////////////////////////////////////////////////////////"
+            #Put an ASCII pokeball at the bottom.
          end
         puts 'Would you like to release a pokemon or go back to the menu? Enter release or exit:'
         user_response = gets.chomp.downcase 
@@ -78,23 +79,32 @@ class User < ActiveRecord::Base
         if species
             puts "You encounter a wild #{species.name}. Would you like to catch it or run away? Enter 'catch' or 'run': "
             catch_or_run = gets.chomp
-
             if catch_or_run == 'catch'
-                random_number = rand(1..2).to_s
-                puts "Please enter a number between 1 and 2:"
-                 user_number = gets.chomp
+                ball_count = 10 
+                random_number = rand(1..10)
 
-                if random_number == user_number
-                    puts "Congratulations! You caught a #{species.name} " #wanted to create a new method but needed to grab species name
-                    puts "Please enter a nickname for your pokemon:"
-                    nickname = gets.chomp
-                    Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
-                    self.welcome
-                else
-                    puts "Darn! The #{species.name} has escaped."
-                    self.welcome 
-                end                
-                
+                until ball_count == 0 do
+                    random_user_number = rand(1..10)
+                    puts "You have #{ball_count} safari balls. Type t to throw one."
+                    user_throw = gets.chomp
+                    if user_throw == "t"
+                        ball_count -= 1
+                        if random_number == random_user_number
+                            puts "Congratulations! You caught a #{species.name} " #wanted to create a new method but needed to grab species name
+                            puts "Please enter a nickname for your pokemon:"
+                            nickname = gets.chomp
+                            Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
+                            self.welcome
+                        end
+                    else 
+                        puts "Please press 't' to throw a safari ball."
+                        self.catch_pokemon
+                    end
+                end
+
+                puts "Darn! The #{species.name} has escaped."
+                self.welcome 
+                             
             elsif catch_or_run == 'run'
                 puts "You escaped!"
                 self.welcome
