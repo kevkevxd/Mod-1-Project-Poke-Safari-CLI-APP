@@ -1,12 +1,14 @@
+
 class Cli
     def self.start
-        puts "Welcome to Poké Safari! Would you like to sign up or sign in?"
-        user_login_input = gets.chomp.strip 
+        prompt = TTY::Prompt.new
+        user_login_input = prompt.select("Welcome to Poké Safari!", %w(sign-up sign-in))
+        #user_login_input = gets.chomp.strip 
         
-        if user_login_input == "sign up"
+        if user_login_input == "sign-up"
             User.sign_up
             start
-        elsif user_login_input == "sign in"
+        elsif user_login_input == "sign-in"
             user = User.sign_in
             if user
                 puts "Welcome back #{user.username}!"

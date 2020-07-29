@@ -1,42 +1,51 @@
 class User < ActiveRecord::Base
     has_many :pokemons
     def self.sign_up
-        puts "Please enter a username:"
-        username = gets.chomp.strip 
-        puts "Please enter a password:"
-        password = gets.chomp.strip
-        puts "Please enter any gender:"
-        gender = gets.chomp.strip
-        puts "Please enter your trainer name:"
-        trainer_name = gets.chomp.strip
+        prompt = TTY::Prompt.new
+        username = prompt.ask("Please enter a username:") 
+        
+        password = prompt.mask("Please enter a password:")
+         
+        gender = prompt.select("What is your gender?", %w(male female non-binary))
+        
+        trainer_name = prompt.ask("Please enter your trainer name:")
         user = User.create(username: username, password: password, gender: gender, trainer_name: trainer_name)
         user.save
     end
     
     def self.sign_in
-        puts "Please enter your username:"
-        username = gets.chomp.strip
-        puts "Please enter your password:"
-        password = gets.chomp.strip
+        prompt = TTY::Prompt.new
+        username = prompt.ask("Please enter a username:")
+        
+        password = prompt.mask("Please enter a password:")
+        
         User.all.find_by(username: username, password: password)
     end
 
-    def welcome
-        puts "To catch a pokemon type '1' To look at your PC (Pokemon Collection) type '2'"
-        user_decision = gets.chomp.strip
-        if user_decision == "1"
+    
+
+     def welcome
+         prompt = TTY::Prompt.new
+         user_decision = prompt.select("What would you like to do?", %w(CATCH_POKEMON PC QUIT))
+        
+        
+         if user_decision == "CATCH_POKEMON"
 
             self.catch_pokemon
 
-        elsif user_decision == "2"
+         elsif user_decision == "PC"
 
-            self.pc_loadup
-    
-        else
+             self.pc_loadup
+
+         elsif user_decision == "QUIT"
+            puts "Press CRTL C to exit the terminal."
+            puts "                     "
+            Cli.start
+         else
 
             puts "Please enter either 1 or 2. Try again:"
             self.welcome 
-        end
+         end
     end
 
     def pc_loadup
@@ -74,8 +83,8 @@ class User < ActiveRecord::Base
         species = Species.all[random_pokemon]
         mood = rand(1..2)
         ball_count = 10 
-        random_number = rand(1..10)
-        random_user_number = rand(1..10)
+        random_number = rand(1..6)
+        random_user_number = rand(1..6)
         until ball_count == 0 do
             puts "You encounter a wild #{species.name.upcase}. You have #{ball_count} safari balls left."
             puts "-------------------------------------"
@@ -99,16 +108,19 @@ class User < ActiveRecord::Base
                     nickname = gets.chomp.strip
                     Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
                     self.welcome
-                end
+                
+                else
                 puts "Oh, no! The #{species.name.upcase} broke free!"
+                end
+
             elsif catch_or_run == 'r'
                 puts "                                                   "
                 puts "You threw a rock at #{species.name.upcase}"
                 rock_number = rand(1..3)
                 user_rock_number = rand (1..3)
                 if mood == 1
-                    random_number = (1..5)
-                    random_user_number = (1..5)
+                    random_number = (1..4)
+                    random_user_number = (1..4)
                     puts "                                                   "
                     puts "The #{species.name.upcase} liked that."
                 else
@@ -131,8 +143,8 @@ class User < ActiveRecord::Base
                 user_bait_number = rand (1..3)
 
                 if mood == 2
-                    random_number = (1..5)
-                    random_user_number = (1..5)
+                    random_number = (1..4)
+                    random_user_number = (1..4)
                     puts "                                                   "
                     puts "The #{species.name.upcase} liked that."
                 else
@@ -159,32 +171,23 @@ class User < ActiveRecord::Base
     end
 
 
-
     def poke_ball 
-        puts "                    "
-        puts "    ############   "
-        puts "  ################ "
-        puts " ################## "
-        puts "########[ 0 ]#######"
-        puts " ################## "
-        puts "  ################ "
-        puts "    ############   "
-        puts "                  "
+        puts "                                             "  
+        puts "           ############            ############            ############             "
+        puts "         ################        ################        ################        "
+        puts "        ##################      ##################      ##################     "
+        puts "       ########[ 0 ]#######    ########[ 0 ]#######    ########[ 0 ]#######  "
+        puts "        ##################      ##################      ##################    "
+        puts "         ################        ################        ################        "
+        puts "           ############            ############            ############              "
+                                         
     end
 
-    def poke_ball_two
-        puts "    ##########   "
-        puts "   #############  "
-        puts "  ############### "
-        puts " #####[ 0 ]#######"
-        puts "##################"
-        puts "  ############### "
-        puts "   ############"
-    end
 
     def pc_select
-        puts 'Would you like to release a pokemon or go back to the menu? Enter release or menu:'
-            user_response = gets.chomp.downcase.strip 
+        prompt = TTY::Prompt.new
+        user_response = prompt.select('Would you like to release a pokemon or go back to the menu?', %w(release back))
+            # user_response = gets.chomp.downcase.strip 
             if user_response == 'release'
                 puts "Which pokemon would you like to release? Enter their nickname (remember nicknames are case sensitive):"
                 user_nickname = gets.chomp.strip
@@ -195,7 +198,7 @@ class User < ActiveRecord::Base
                     puts "Please enter a valid nickname. Try again:"
                     self.pc_loadup
                 end
-            elsif user_response == 'menu'
+            elsif user_response == 'back'
                 self.welcome 
             else
                 puts "Not a valid input try again."
