@@ -72,6 +72,7 @@ class User < ActiveRecord::Base
         #pokemon_name = gets.chomp.downcase
         random_pokemon = rand(0..151)
         species = Species.all[random_pokemon]
+        mood = rand(1..2)
         ball_count = 10 
         random_number = rand(1..10)
         random_user_number = rand(1..10)
@@ -101,12 +102,20 @@ class User < ActiveRecord::Base
                 end
                 puts "Oh, no! The #{species.name.upcase} broke free!"
             elsif catch_or_run == 'r'
-                rock_number = rand(1..3)
-                user_rock_number = rand (1..3)
-                random_number = (1..5)
-                random_user_number = (1..5)
                 puts "                                                   "
                 puts "You threw a rock at #{species.name.upcase}"
+                rock_number = rand(1..3)
+                user_rock_number = rand (1..3)
+                if mood == 1
+                    random_number = (1..5)
+                    random_user_number = (1..5)
+                    puts "                                                   "
+                    puts "The #{species.name.upcase} liked that."
+                else
+                    puts "                                                   " 
+                    puts "The #{species.name.upcase} really did not like that."
+                end
+
                 if rock_number == user_rock_number
                     puts "Wild #{species.name.upcase} has fled!"
                     self.welcome 
@@ -114,6 +123,31 @@ class User < ActiveRecord::Base
                 puts "                                                   "
                 puts "#{species.name.upcase} is watching you carefully..."
                 puts "                                                   "
+
+            elsif catch_or_run == 'b'
+                puts "                                                   "
+                puts "You threw a piece of bait at #{species.name.upcase}"
+                bait_number = rand(1..3)
+                user_bait_number = rand (1..3)
+
+                if mood == 2
+                    random_number = (1..5)
+                    random_user_number = (1..5)
+                    puts "                                                   "
+                    puts "The #{species.name.upcase} liked that."
+                else
+                    puts "                                                   " 
+                    puts "The #{species.name.upcase} really did not like that."
+                end
+
+                if bait_number == user_bait_number
+                    puts "Wild #{species.name.upcase} has fled!"
+                    self.welcome 
+                end
+                puts "                                                   "
+                puts "#{species.name.upcase} is watching you carefully..."
+                puts "                                                   "
+
             else 
                 puts "That's not a valid action! The wild #{species.name.upcase} has fled! Try again."
                 self.catch_pokemon
@@ -168,9 +202,5 @@ class User < ActiveRecord::Base
                 self.pc_loadup   
             end 
     end
-
-    
-
-
 end
 
