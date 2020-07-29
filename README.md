@@ -10,10 +10,11 @@ The mechanics of rock and bait in the game are based on chance. So depending on 
 
 Instructions on How to Play:
 
-1. First fork and clone down the app. 
-2. Then run 'rake db:migrate' and after that 'rake db:seed' in your terminal.
-3. After that run 'ruby bin/run.rb' in your terminal.
-4. Now you are ready to play! Follow the menus by using the arrow keys and by pressing enter.
+1. First fork and clone down the app.
+2. Then run a 'bundle install'.
+3. Then run 'rake db:migrate' and after that 'rake db:seed' in your terminal.
+4. After that run 'ruby bin/run.rb' in your terminal.
+5. Now you are ready to play! Follow the menus by using the arrow keys and by pressing enter.
 
 
 

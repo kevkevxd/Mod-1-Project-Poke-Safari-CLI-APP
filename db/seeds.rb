@@ -40,7 +40,7 @@ groudon_type = Type.create(type_one: "Ground", type_two: "Fire")
 Species.create(name: "groudon", type_id: groudon_type.id)
 
 
-pry.Start
+#pry.Start
 
 
 
