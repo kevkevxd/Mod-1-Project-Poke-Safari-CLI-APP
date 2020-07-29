@@ -43,7 +43,7 @@ class User < ActiveRecord::Base
          pokemon = self.pokemons.reload  
          pokemon.each do |pokemon|
             puts "|--------------------------------------------------------------------------|"
-            puts " NICKNAME: #{pokemon.nickname.upcase}"
+            puts " NICKNAME: #{pokemon.nickname}"
             puts "|--------------------------------------------------------------------------|"
             puts " SPECIES: #{pokemon.species.name.upcase}"
             puts "|--------------------------------------------------------------------------|"
@@ -56,27 +56,10 @@ class User < ActiveRecord::Base
             puts " OWNER: #{self.trainer_name.upcase}"
             puts "////////////////////////////////////////////////////////////////////////////"
          end
+        
         if self.pokemons.count > 0
             self.poke_ball 
-            puts 'Would you like to release a pokemon or go back to the menu? Enter release or exit:'
-            user_response = gets.chomp.downcase.strip 
-            if user_response == 'release'
-                puts "Which pokemon would you like to release? Enter their nickname:"
-                user_nickname = gets.chomp.strip
-                if self.pokemons.find_by(nickname: user_nickname)
-                    self.pokemons.find_by(nickname: user_nickname).destroy
-                    self.welcome
-                    
-                else
-                    "Please enter a valid nickname. Try again:"
-                    self.pc_loadup
-                end
-            elsif user_response == 'exit'
-                self.welcome 
-            else
-                puts "Not a valid input try again."
-                self.pc_loadup   
-            end 
+            self.pc_select 
         else 
             puts "Looks like you don't have any pokemon yet. Go catch some!"
             self.welcome 
@@ -87,53 +70,61 @@ class User < ActiveRecord::Base
     def catch_pokemon
         #puts "Please enter the Pokemon you want to catch:"
         #pokemon_name = gets.chomp.downcase
-        random_pokemon = rand(0..150)
+        random_pokemon = rand(0..151)
         species = Species.all[random_pokemon]
-        if species
-            puts "You encounter a wild #{species.name}. Would you like to catch it or run away? Enter 'catch' or 'run': "
+        ball_count = 10 
+        random_number = rand(1..10)
+        random_user_number = rand(1..10)
+        until ball_count == 0 do
+            puts "You encounter a wild #{species.name.upcase}. You have #{ball_count} safari balls left."
+            puts "-------------------------------------"
+            puts "|                                   |"
+            puts "|  THROW BALL 't'   THROW BAIT 'b'  |"
+            puts "|                                   |"
+            puts "|  THROW ROCK 'r'   RUN AWAY 'e'    |"
+            puts "|                                   |"
+            puts "-------------------------------------"
             catch_or_run = gets.chomp.strip
-            if catch_or_run == 'catch'
-                ball_count = 10 
-                random_number = rand(1..10)
 
-                until ball_count == 0 do
-                    random_user_number = rand(1..10)
-                    puts "You have #{ball_count} safari balls. Type anything to throw one."
-                    user_throw = gets.chomp.strip
-                    if user_throw
-                        ball_count -= 1
-                        if random_number == random_user_number
-                            puts "Congratulations! You caught a #{species.name} " #wanted to create a new method but needed to grab species name
-                            puts "Please enter a nickname for your pokemon:"
-                            nickname = gets.chomp.strip
-                            Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
-                            self.welcome
-                        end
-                    else 
-                        puts "Please press 't' to throw a safari ball."
-                        self.catch_pokemon
-                    end
-                end
-
-                puts "Darn! The #{species.name} has escaped."
-                self.welcome 
-                             
-            elsif catch_or_run == 'run'
-                puts "You escaped!"
+            if catch_or_run == 'e'
+                puts "Got away safely!"
                 self.welcome
+
+            elsif catch_or_run == 't'  
+                ball_count -= 1
+                if random_number == random_user_number
+                    puts "Congratulations! You caught a #{species.name.upcase} " #wanted to create a new method but needed to grab species name
+                    puts "Please enter a nickname for your pokemon:"
+                    nickname = gets.chomp.strip
+                    Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
+                    self.welcome
+                end
+                puts "Oh, no! The #{species.name.upcase} broke free!"
+            elsif catch_or_run == 'r'
+                rock_number = rand(1..3)
+                user_rock_number = rand (1..3)
+                random_number = (1..5)
+                random_user_number = (1..5)
+                puts "                                                   "
+                puts "You threw a rock at #{species.name.upcase}"
+                if rock_number == user_rock_number
+                    puts "Wild #{species.name.upcase} has fled!"
+                    self.welcome 
+                end
+                puts "                                                   "
+                puts "#{species.name.upcase} is watching you carefully..."
+                puts "                                                   "
             else 
-                puts "That's not a valid action please try again"
+                puts "That's not a valid action! The wild #{species.name.upcase} has fled! Try again."
                 self.catch_pokemon
             end
 
-        else 
-            puts "That's not a Pokemon please try again"
-            self.catch_pokemon
         end
+        puts "Wild #{species.name.upcase} has fled!"
+        self.welcome 
     end
 
-    # def pokeball_art
-    # end 
+
 
     def poke_ball 
         puts "                    "
@@ -149,12 +140,37 @@ class User < ActiveRecord::Base
 
     def poke_ball_two
         puts "    ##########   "
-        puts "  ##############  "
-        puts " ################ "
-        puts "######[ 0 ]#######"
-        puts " ##################"
-        puts "   ############### "
-        puts "     ############"
+        puts "   #############  "
+        puts "  ############### "
+        puts " #####[ 0 ]#######"
+        puts "##################"
+        puts "  ############### "
+        puts "   ############"
     end
 
+    def pc_select
+        puts 'Would you like to release a pokemon or go back to the menu? Enter release or menu:'
+            user_response = gets.chomp.downcase.strip 
+            if user_response == 'release'
+                puts "Which pokemon would you like to release? Enter their nickname (remember nicknames are case sensitive):"
+                user_nickname = gets.chomp.strip
+                if self.pokemons.find_by(nickname: user_nickname)
+                    self.pokemons.find_by(nickname: user_nickname).destroy
+                    self.welcome
+                else
+                    puts "Please enter a valid nickname. Try again:"
+                    self.pc_loadup
+                end
+            elsif user_response == 'menu'
+                self.welcome 
+            else
+                puts "Not a valid input try again."
+                self.pc_loadup   
+            end 
+    end
+
+    
+
+
 end
+
