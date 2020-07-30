@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
         trainer_name = prompt.ask("Please enter your trainer name:")
         user = User.create(username: username, password: password, gender: gender, trainer_name: trainer_name)
         user.save
+        User.all.find_by(username: username, password: password)
+        user.welcome 
     end
     
     def self.sign_in
@@ -65,8 +67,11 @@ class User < ActiveRecord::Base
             puts " OWNER: #{self.trainer_name.upcase}"
             puts "////////////////////////////////////////////////////////////////////////////"
          end
+    
         
         if self.pokemons.count > 0
+            puts "                                   "
+            puts "POKÉMON COUNT: #{pokemons.count}"
             self.poke_ball 
             self.pc_select 
         else 
