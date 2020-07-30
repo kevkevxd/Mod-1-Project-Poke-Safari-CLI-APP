@@ -27,9 +27,13 @@ all_pokemon["results"].each do |pokemon|
     type_names = pokemon_types.map do |types| 
        types["type"]["name"]  
     end
+
+    species_stat = pokemon_stats["stats"][0]["base_stat"] + pokemon_stats["stats"][1]["base_stat"] + pokemon_stats["stats"][2]["base_stat"] + pokemon_stats["stats"][3]["base_stat"] + pokemon_stats["stats"][4]["base_stat"] + pokemon_stats["stats"][5]["base_stat"]
     
    the_type = Type.find_or_create_by(type_one: type_names[0], type_two: type_names[1])
-   Species.create(name: pokemon["name"], type_id: the_type.id)
+   Species.create(name: pokemon["name"], type_id: the_type.id, stat: species_stat)
+
+   #¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥
 
 end
 
@@ -37,7 +41,8 @@ end
 
 groudon_type = Type.create(type_one: "Ground", type_two: "Fire")
 
-Species.create(name: "groudon", type_id: groudon_type.id)
+Species.create(name: "groudon", type_id: groudon_type.id, stat: 1000)
+
 
 
 #pry.Start
