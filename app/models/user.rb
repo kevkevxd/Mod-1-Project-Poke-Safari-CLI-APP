@@ -26,13 +26,13 @@ class User < ActiveRecord::Base
 
     
     def inventory
+        User.all.reload
         total_currency = self.currency
         puts "////////////////////////////////////////////////////////////////////////////"
         puts "|--------------------------------------------------------------------------|"
         puts "  MONEY: ¥ #{total_currency}"
         puts "|--------------------------------------------------------------------------|"
-        safari_ball_count = self.balls
-        puts "  SAFARI BALLS: #{safari_ball_count}"
+        puts "  SAFARI BALLS: #{self.balls}"
         puts "|--------------------------------------------------------------------------|"
         puts "////////////////////////////////////////////////////////////////////////////"
         prompt = TTY::Prompt.new
@@ -43,6 +43,40 @@ class User < ActiveRecord::Base
             self.inventory
         end
     end 
+
+    def shop
+        prompt = TTY::Prompt.new
+        total_currency = self.currency   
+        puts " _____________________________________"  
+        puts "                                      "   
+        puts " MONEY: ¥ #{total_currency}          "              
+        puts " -------------------------------------" 
+        puts " SAFARI BALLS: #{self.balls}          "         
+        puts " _____________________________________"
+        user_decision = prompt.select("What would you like to do?", %w(BUY_ONE_BALL LEAVE))
+       if user_decision == "BUY_ONE_BALL"
+        
+    
+        if self.currency > 19
+            self.currency -= 20
+            self.balls += 1
+            self.save 
+            self.shop
+        elsif self.currency < 19 && self.balls == 0
+            puts "HEY! You don't have the money for this. You know what I'll be nice and give you 10 balls on the house."
+            self.balls += 10
+            self.save 
+            self.shop
+        else 
+            puts "HEY! You don't have the money for this. You still have some Safari Balls left go catch a Pokémon!"
+            self.shop
+        end   
+
+       elsif user_decision == "LEAVE"
+
+           self.welcome
+       end
+    end
 
    
      def welcome
@@ -60,7 +94,7 @@ class User < ActiveRecord::Base
 
         elsif user_decision == "POKÉMART"
 
-            #self.pokemart
+            self.shop
 
         elsif user_decision == "BAG"
 
@@ -118,13 +152,10 @@ class User < ActiveRecord::Base
         species = Species.all[random_pokemon]
         species.stat += rand(0..20)
         mood = rand(1..2)
-        ball_count = self.balls
-        random_number = rand(1..5)
-        random_user_number = rand(1..5)
-        escape_number = rand(1..4)
-        escape_user_number = rand(1..4)
-        until ball_count == 0 do
-            puts "You encounter a wild #{species.name.upcase}. You have #{ball_count} safari balls left."
+        random_number = rand(1..2)
+        random_user_number = rand(1..2)
+        until self.balls == 0 do
+            puts "You encounter a wild #{species.name.upcase}. You have #{self.balls} safari balls left."
             puts "-------------------------------------"
             puts "|                                   |"
             puts "|  THROW BALL 't'   THROW BAIT 'b'  |"
@@ -138,15 +169,21 @@ class User < ActiveRecord::Base
                 puts "Got away safely!"
                 self.welcome
 
-            elsif catch_or_run == 't'  
-                ball_count -= 1
+            elsif catch_or_run == 't'
+                escape_number = rand(1..3)
+                escape_user_number = rand(1..3)  
+                self.balls -= 1
+                self.save 
                 if random_number == random_user_number
                     puts "Congratulations! You caught a #{species.name.upcase} " #wanted to create a new method but needed to grab species name
                     puts "Please enter a nickname for your pokemon:"
                     nickname = gets.chomp.strip
                     Pokemon.create(nickname: nickname, user_id: self.id, species_id: species.id)
                     self.welcome
-                
+                elsif escape_number == escape_user_number
+                    puts "Wild #{species.name.upcase} has fled!"
+                    puts "                                                   " 
+                    self.welcome 
                 else
                     puts "Oh, no! The #{species.name.upcase} broke free!"
                 end
@@ -154,20 +191,23 @@ class User < ActiveRecord::Base
             elsif catch_or_run == 'r'
                 puts "                                                   "
                 puts "You threw a rock at #{species.name.upcase}"
-                escape_number = rand(1..3)
-                escape_user_number = rand (1..3)
+                escape_number = rand(1..2)
+                escape_user_number = rand(1..2)
                 if mood == 1
-                    random_number = rand(1..4)
-                    random_user_number = rand(1..4)
+                    random_number = rand(1..2)
+                    random_user_number = rand(1..2)
                     puts "                                                   "
                     puts "The #{species.name.upcase} liked that."
+                    puts "                                                   " 
                 else
                     puts "                                                   " 
                     puts "The #{species.name.upcase} really did not like that."
+                    puts "                                                   " 
                 end
 
-                if rock_number == user_rock_number
+                if escape_number == escape_user_number
                     puts "Wild #{species.name.upcase} has fled!"
+                    puts "                                                   " 
                     self.welcome 
                 end
                 puts "                                                   "
@@ -177,21 +217,24 @@ class User < ActiveRecord::Base
             elsif catch_or_run == 'b'
                 puts "                                                   "
                 puts "You threw a piece of bait at #{species.name.upcase}"
-                escape_number = rand(1..3)
-                escape_user_number = rand (1..3)
+                escape_number = rand(1..2)
+                escape_user_number = rand(1..2)
 
                 if mood == 2
-                    random_number = rand(1..4)
-                    random_user_number = rand(1..4)
+                    random_number = rand(1..2)
+                    random_user_number = rand(1..2)
                     puts "                                                   "
                     puts "The #{species.name.upcase} liked that."
+                    puts "                                                   "
                 else
                     puts "                                                   " 
                     puts "The #{species.name.upcase} really did not like that."
+                    puts "                                                   "
                 end
 
-                if bait_number == user_bait_number
+                if escape_number == escape_user_number
                     puts "Wild #{species.name.upcase} has fled!"
+                    puts "                                                   "
                     self.welcome 
                 end
                 puts "                                                   "
@@ -204,8 +247,8 @@ class User < ActiveRecord::Base
             end
 
         end
-        if escape_number == escape_user_number || ball_count == 0
-            puts "Wild #{species.name.upcase} has fled!"
+        if self.balls == 0
+            puts "You have no safari balls. Go buy some!"
             self.welcome 
         end
     end
@@ -226,9 +269,13 @@ class User < ActiveRecord::Base
 
     def pc_select_sell 
         prompt = TTY::Prompt.new
-        user_response = prompt.select('Would you like to sell a pokemon, release a pokemon or go back to the menu?', %w(release sell back))
+        user_response = prompt.select('Would you like to sell a pokemon, release a pokemon or go back to the menu?', %w(RELEASE SELL MENU))
             # user_response = gets.chomp.downcase.strip 
-            if user_response == 'release'
+            if user_response == 'RELEASE'
+                if self.pokemons.count == 0
+                    puts "Looks like you don't have any pokemon. Go catch some!"
+                    self.welcome 
+                end
                 puts "Which pokemon would you like to release? Enter their nickname (remember nicknames are case sensitive):"
                 user_nickname = gets.chomp.strip
                 if self.pokemons.find_by(nickname: user_nickname)
@@ -238,19 +285,26 @@ class User < ActiveRecord::Base
                     puts "Please enter a valid nickname. Try again:"
                     self.pc_select_sell
                 end
-            elsif user_response == "sell"
+            elsif user_response == "SELL"
+                if self.pokemons.count == 0
+                    puts "Looks like you don't have any pokemon. Go catch some!"
+                    self.welcome 
+                end
                 puts "Which pokemon would you like to sell? Enter their nickname (remember nicknames are case sensitive):"
                 user_nickname = gets.chomp.strip
                 if self.pokemons.find_by(nickname: user_nickname)
                     sold_pokemon = self.pokemons.find_by(nickname: user_nickname)
-                    self.currency += sold_pokemon.stat 
+                    self.currency += sold_pokemon.species.stat 
+                    self.save 
                     self.pokemons.find_by(nickname: user_nickname).destroy
+                    puts "You sold #{sold_pokemon.nickname} for ¥#{sold_pokemon.species.stat}"
+                    puts "TOTAL MONEY: ¥ #{self.currency}"
                     self.pc_select_sell
                 else  
                     puts "Please enter a valid nickname. Try again:"
                     self.pc_select_sell
                 end              
-            elsif user_response == 'back'
+            elsif user_response == 'MENU'
                 self.welcome 
             else
                 puts "Not a valid input try again."
@@ -258,4 +312,4 @@ class User < ActiveRecord::Base
             end 
     end
 end
-
+ 
