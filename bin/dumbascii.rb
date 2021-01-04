@@ -156,7 +156,7 @@ def pic_three
                                          `syhhhhy-                                                  
                                          .hohhhys`                                                  
                                           /ohhoo.                                                   
-                                           `-..                                          "
+                                           `-..                                     "
 
 
 def self.display
